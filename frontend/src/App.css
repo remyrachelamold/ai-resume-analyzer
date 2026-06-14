@@ -1,42 +1,87 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f7fc;
+}
+
+.container {
+  max-width: 1000px;
+  margin: auto;
+  padding: 30px;
+}
+
+h1 {
   text-align: center;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+  color: #2c3e50;
 }
 
 .card {
-  padding: 2em;
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  margin-top: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.read-the-docs {
-  color: #888;
+button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #1d4ed8;
+}
+
+textarea {
+  width: 100%;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+input[type="file"] {
+  margin-top: 10px;
+}
+
+.skill {
+  display: inline-block;
+  background: #dbeafe;
+  padding: 8px 12px;
+  border-radius: 20px;
+  margin: 5px;
+}
+
+.score {
+  width: 200px;
+  height: 200px;
+  margin: auto;
+}
+
+.dropzone {
+  border: 2px dashed #2563eb;
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+  background: white;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-bottom: 20px;
+}
+
+.dropzone:hover {
+  background: #eff6ff;
+}
+
+.dropzone.active {
+  background: #dbeafe;
+  border-color: #1d4ed8;
+}
+
+.dropzone p {
+  margin: 0;
+  font-size: 18px;
+  color: #374151;
 }

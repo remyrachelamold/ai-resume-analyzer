@@ -28,9 +28,14 @@ Resume:
 {text}
 """
 
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt
-    )
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt
+        )
 
-    return response.text
+        return response.text
+
+    except Exception as e:
+        print("Gemini Error:", e)
+        return "AI resume improvement temporarily unavailable due to API limits."

@@ -21,9 +21,14 @@ def get_feedback(resume_text):
     {resume_text}
     """
 
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt
-    )
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt
+        )
 
-    return response.text
+        return response.text
+
+    except Exception as e:
+        print("Gemini Error:", e)
+        return "AI feedback temporarily unavailable."

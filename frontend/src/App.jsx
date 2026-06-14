@@ -7,6 +7,8 @@ function App() {
   const [file, setFile] = useState(null);
   const [result, setResult] = useState(null);
   const [jobDescription, setJobDescription] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
 
   const handleUpload = async () => {
     if (!file) {
@@ -18,27 +20,76 @@ function App() {
     formData.append("resume", file);
     formData.append("job_description", jobDescription);
 
-    const response = await fetch(
-      "http://127.0.0.1:5000/api/analyze",
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
-
-    const data = await response.json();
-    setResult(data);
+    try {
+      setLoading(true);
+    
+      const response = await fetch(
+        "http://127.0.0.1:5000/api/analyze",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+    
+      const data = await response.json();
+      setResult(data);
+    }
+    catch (error) {
+      console.error(error);
+      alert("Error analyzing resume");
+    }
+    finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div style={{ padding: "40px" }}>
+    <div className="container">
       <h1>AI Resume Analyzer</h1>
 
-      <input
-        type="file"
-        accept=".pdf"
-        onChange={(e) => setFile(e.target.files[0])}
-      />
+      <div
+  className={`dropzone ${dragActive ? "active" : ""}`}
+  onDragEnter={(e) => {
+    e.preventDefault();
+    setDragActive(true);
+  }}
+  onDragOver={(e) => {
+    e.preventDefault();
+    setDragActive(true);
+  }}
+  onDragLeave={(e) => {
+    e.preventDefault();
+    setDragActive(false);
+  }}
+  onDrop={(e) => {
+    e.preventDefault();
+    setDragActive(false);
+
+    const droppedFile = e.dataTransfer.files[0];
+
+    if (droppedFile && droppedFile.type === "application/pdf") {
+      setFile(droppedFile);
+    } else {
+      alert("Please upload a PDF file.");
+    }
+  }}
+>
+  <input
+    type="file"
+    accept=".pdf"
+    id="resume-upload"
+    hidden
+    onChange={(e) => setFile(e.target.files[0])}
+  />
+
+  <label htmlFor="resume-upload">
+    <p>
+      {file
+        ? `📄 ${file.name}`
+        : "Drag & Drop your resume here or click to browse"}
+    </p>
+  </label>
+</div>
 
       <br /><br />
 
@@ -52,57 +103,88 @@ function App() {
 
     <br /><br />
 
-      <button onClick={handleUpload}>
-        Analyze Resume
-      </button>
+    <button onClick={handleUpload} disabled={loading}>
+  {loading ? "Analyzing..." : "Analyze Resume"}
+</button>
 
       {result && (
-        <div style={{ marginTop: "20px" }}>
-          <div style={{ width: 200, height: 200 }}>
-  <CircularProgressbar
-    value={result.ats_score}
-    text={`${result.ats_score}%`}
-  />
+        <div className="results">
+       <div className="card">
+  <h2>ATS Score</h2>
+
+  <div className="score">
+    <CircularProgressbar
+      value={result.ats_score}
+      text={`${result.ats_score}%`}
+    />
+  </div>
 </div>
 
-          <h3>Skills Found:</h3>
+<div className="card">
+  <h2>Skills Found</h2>
 
-          <ul>
-            {result.skills.map((skill, index) => (
-              <li key={index}>{skill}</li>
-            ))}
-          </ul>
+  <div>
+    {result.skills.map((skill, index) => (
+      <span className="skill" key={index}>
+        {skill}
+      </span>
+    ))}
+  </div>
+</div>
 
-          <h3>AI Feedback</h3>
-<pre
-  style={{
-    whiteSpace: "pre-wrap",
-    background: "#eee",
-    padding: "10px",
-  }}
->
-  {result.feedback}
-</pre>
+<div className="card">
+  <h2>AI Feedback</h2>
 
-<h3>Job Match Score</h3>
-<p>{result.match_score}%</p>
+  <pre className="feedback">
+    {result.feedback}
+  </pre>
+</div>          
 
-<h3>Missing Keywords</h3>
+<div className="card">
+  <h2>Job Match Score</h2>
 
-<ul>
+  <h1>{result.match_score}%</h1>
+
+  <h3>Missing Keywords</h3>
+
+  <ul>
   {result.missing_keywords.map((word, i) => (
     <li key={i}>{word}</li>
   ))}
 </ul>
+</div>
 
-<h2>AI Improved Resume</h2>
+<div className="card">
+  <h2>AI Improved Resume</h2>
 
-<textarea
-  rows={20}
-  cols={100}
-  value={result.improved_resume}
-  readOnly
-/>
+  <button
+    onClick={() =>
+      navigator.clipboard.writeText(
+        result.improved_resume
+      )
+    }
+  >
+    Copy Resume
+  </button>
+
+  <br /><br />
+
+  <textarea
+    rows={20}
+    value={result.improved_resume}
+    readOnly
+  />
+</div>
+
+<footer
+  style={{
+    textAlign: "center",
+    marginTop: "40px",
+    color: "gray",
+  }}
+>
+  Built with React, Flask and Gemini AI
+</footer>
 
         </div>
       )}
